@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة الأصوات والصور</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--tx:#1d1d1f;--mut:#6b6b70;--ac:#e0552b;--bd:#e4e0d8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17171a;--card:#232328;--tx:#f2f2f3;--mut:#9a9aa2;--ac:#ff7a50;--bd:#34343b}}
+:root[data-theme="dark"]{--bg:#17171a;--card:#232328;--tx:#f2f2f3;--mut:#9a9aa2;--ac:#ff7a50;--bd:#34343b}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif;min-height:100vh}
+main{max-width:720px;margin:0 auto;padding:18px 14px 40px}
+h1{font-size:1.5rem;margin:6px 0 4px}
+p.sub{color:var(--mut);margin:0 0 6px;font-size:.9rem}
+.role{display:inline-block;font-size:.75rem;padding:3px 10px;border-radius:20px;background:var(--card);border:1px solid var(--bd);color:var(--mut);margin-bottom:14px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:12px;padding:10px 14px}
+button.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+button.rec{background:#c62828;border-color:#c62828;color:#fff;font-weight:600}
+.vol{display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--mut);font-size:.9rem}
+.vol input{flex:1;accent-color:var(--ac)}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tabs button{flex:1;padding:8px;font-size:.9rem}
+.tabs button.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.pad{position:relative;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px 8px 12px;text-align:center;cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .08s;overflow:hidden}
+.pad:active{transform:scale(.96)}
+.pad.play{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}
+.pad .ic{font-size:2rem;display:block;margin-bottom:6px;height:2.4rem}
+.pad.img{padding:0 0 10px}
+.pad.img .th{height:110px;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:8px}
+.pad.img img{width:100%;height:110px;object-fit:cover;display:block}
+.pad .nm{font-size:.9rem;word-break:break-word;padding:0 6px}
+.badge{position:absolute;bottom:44px;inset-inline-end:6px;background:#000a;color:#fff;font-size:.7rem;padding:2px 7px;border-radius:8px}
+.pad .tl{position:absolute;top:4px;inset-inline-start:4px;display:flex;gap:2px;background:var(--card);border-radius:10px;z-index:2}
+.pad .tl span{font-size:.8rem;padding:4px 6px;color:var(--mut)}
+.empty{color:var(--mut);text-align:center;padding:30px 0;grid-column:1/-1}
+#msg{color:var(--mut);font-size:.85rem;min-height:1.2em;margin-bottom:8px}
+.lb{position:fixed;inset:0;background:#000d;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;cursor:zoom-out}
+.lb img{max-width:100%;max-height:100%;border-radius:10px}
+#intro{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(circle at 50% 40%,var(--card),var(--bg));transition:opacity .7s,transform .7s;cursor:pointer}
+#intro.out{opacity:0;transform:scale(1.15);pointer-events:none}
+#iw{display:flex;direction:ltr;gap:clamp(4px,2vw,14px)}
+.lt{display:flex;flex-direction:column;align-items:center;opacity:0;animation:pop .7s cubic-bezier(.2,1.6,.4,1) forwards}
+.lt b{font-size:clamp(3rem,16vw,6rem);font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1;background:linear-gradient(135deg,var(--ac),#f5b301);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lt .em{font-size:clamp(1.6rem,7vw,2.6rem);animation:flt 1.6s ease-in-out infinite alternate}
+.tag{opacity:0;animation:fade .8s 2.7s forwards;color:var(--mut);font-size:.9rem}
+@keyframes pop{0%{opacity:0;transform:translateY(40px) scale(.3) rotate(-25deg)}100%{opacity:1;transform:none}}
+@keyframes flt{to{transform:translateY(-8px) rotate(8deg)}}
+@keyframes fade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.lt,.tag{animation-duration:.01s}.lt .em{animation:none}}
+.sm{padding:3px 10px;font-size:.75rem;border-radius:20px;margin-inline-start:6px}
+dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);padding:18px;width:min(92vw,340px)}
+dialog::backdrop{background:#0008}
+dialog input{display:block;width:100%;font:inherit;padding:10px;margin:8px 0;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+</style>
+</head>
+<body>
+<div id="intro"><div id="iw"></div><div class="tag">اضغط للدخول</div></div>
+<main>
+<h1>🎛️ لوحة الأصوات والصور</h1>
+<p class="sub">اضغط على الصوت لتشغيله ومرة ثانية لإيقافه، واضغط على الصورة لتكبيرها. تقدر تضيف أي عدد من الملفات.</p>
+<div class="role" id="role">…</div> <button class="sm" id="loginBtn">🔐 دخول الأدمن</button>
+
+<div class="bar" id="actions">
+  <button class="pri" id="addBtn">＋ إضافة صوت أو صورة</button>
+  <button id="recBtn">🎙️ تسجيل</button>
+  <input type="file" id="file" accept="audio/*,image/*" multiple hidden>
+</div>
+<div id="msg"></div>
+<label class="vol">🔊 <input type="range" id="vol" min="0" max="1" step="0.05" value="0.8"></label>
+
+<div class="tabs" id="tabs">
+  <button data-t="all" class="on">الكل</button>
+  <button data-t="aud">🎵 أصوات</button>
+  <button data-t="img">🖼️ صور و GIF</button>
+</div>
+<div class="grid" id="grid"></div>
+</main>
+<dialog id="dlg"><b>دخول الأدمن</b>
+<input id="em" type="email" placeholder="الإيميل" dir="ltr" autocomplete="username">
+<input id="pw" type="password" placeholder="كلمة السر" dir="ltr" autocomplete="current-password">
+<div class="bar"><button class="pri" id="go">دخول</button><button id="cancel">إلغاء</button></div></dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<script>
+/* ===== الإعداد: حط بيانات مشروعك من Supabase → Project Settings → API ===== */
+const SUPABASE_URL = 'https://vrwqzuoiztfjxkxbneee.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyd3F6dW9penRmanhreGJuZWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzQ5MDYsImV4cCI6MjEwOTA1MDkwNn0.aFfonzlgHZErMGplOIrDH3u0KVIXqk2G4qSW34RWkXE';
+/* ======================================================================= */
+const $ = s => document.querySelector(s);
+const grid=$('#grid'), msg=$('#msg');
+let tab='all', vol=0.8, items=[], playing=null, sb=null, isAdmin=false, sig='';
+const MAXB=50*1024*1024;
+const ICON=k=>k==='rec'?'🎙️':k==='img'?'🖼️':'🎵';
+const store=()=>sb.storage.from('media');
+
+async function init(){
+  if(SUPABASE_URL.startsWith('PASTE')){ $('#role').textContent='⚙️ غير مُعدّ'; msg.textContent='حط بيانات Supabase في أول الكود (شوف خطوات الإعداد).'; return; }
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const {data}=await sb.auth.getSession(); setAdmin(!!data.session);
+  sb.auth.onAuthStateChange((_e,s)=>setAdmin(!!s));
+  await load(); setInterval(load,15000);
+}
+function setAdmin(v){
+  isAdmin=v; $('#role').textContent=v?'👑 أدمن: تحكم كامل':'👁️ مشاهد: استماع ومشاهدة فقط';
+  $('#actions').style.display=v?'':'none';
+}
+async function load(){
+  const {data,error}=await sb.from('clips').select('*').order('created_at');
+  if(error){ msg.textContent='تعذّر التحميل: '+error.message; return; }
+  const n=JSON.stringify(data.map(r=>[r.id,r.name]));
+  if(n===sig) return; sig=n;
+  items=data.map(r=>({...r,key:r.id,ic:ICON(r.kind),url:store().getPublicUrl(r.path).data.publicUrl}));
+  render();
+}
+
+/* ---------- الدخول ---------- */
+$('#loginBtn').onclick=async()=>{
+  if(!sb) return;
+  if(isAdmin){ await sb.auth.signOut(); return; }
+  $('#dlg').showModal();
+};
+$('#cancel').onclick=()=>$('#dlg').close();
+$('#go').onclick=async()=>{
+  const {error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});
+  if(error){ msg.textContent='الدخول فشل: '+error.message; } else { msg.textContent=''; $('#pw').value=''; }
+  $('#dlg').close();
+};
+
+/* ---------- التشغيل والعرض ---------- */
+function stopAll(){ if(playing){playing.pause();playing.currentTime=0;playing=null} render(); }
+function open(it){
+  if(it.kind==='img'){ const lb=document.createElement('div');lb.className='lb';const im=document.createElement('img');im.src=it.url;im.alt=it.name;lb.append(im);lb.onclick=()=>lb.remove();document.body.append(lb);return; }
+  if(playing&&playing._k===it.key){ stopAll(); return; }
+  if(playing) playing.pause();
+  const a=new Audio(it.url); a._k=it.key; a.volume=vol; playing=a;
+  a.onended=()=>{ if(playing===a){playing=null;render()} };
+  a.play().then(render).catch(()=>{ msg.textContent='تعذّر تشغيل هذا الملف'; playing=null; render() });
+}
+function render(){
+  const list=items.filter(i=>tab==='all'||(tab==='img'&&i.kind==='img')||(tab==='aud'&&i.kind!=='img'));
+  grid.innerHTML='';
+  if(!list.length){ grid.innerHTML='<div class="empty">ما في شي هنا بعد. أضف صوتاً أو صورة 👆</div>'; return; }
+  list.forEach(it=>{
+    const d=document.createElement('div'), isImg=it.kind==='img';
+    d.className='pad'+(isImg?' img':'')+(playing&&playing._k===it.key?' play':'');
+    if(isImg){
+      d.innerHTML='<div class="th"></div><span class="nm"></span>';
+      const im=document.createElement('img'); im.src=it.url; im.alt=''; im.loading='lazy'; d.querySelector('.th').append(im);
+      if(it.mime==='image/gif'){ const b=document.createElement('span'); b.className='badge'; b.textContent='GIF'; d.append(b); }
+    } else d.innerHTML='<span class="ic">'+it.ic+'</span><span class="nm"></span>';
+    d.querySelector('.nm').textContent=it.name;
+    if(isAdmin){
+      const tl=document.createElement('div'); tl.className='tl';
+      const ed=document.createElement('span'); ed.textContent='✎';
+      const dl=document.createElement('span'); dl.textContent='🗑';
+      ed.onclick=async e=>{ e.stopPropagation(); const n=prompt('اسم جديد',it.name); if(n&&n.trim()){ const r=await sb.from('clips').update({name:n.trim()}).eq('id',it.id); if(r.error) msg.textContent='ما قدرت أعدّل: '+r.error.message; sig=''; load(); } };
+      dl.onclick=async e=>{ e.stopPropagation(); if(!confirm('حذف «'+it.name+'» للجميع؟')) return;
+        if(playing&&playing._k===it.key) stopAll();
+        await store().remove([it.path]);
+        const r=await sb.from('clips').delete().eq('id',it.id);
+        if(r.error) msg.textContent='ما قدرت أحذف: '+r.error.message; sig=''; load(); };
+      tl.append(ed,dl); d.append(tl);
+    }
+    d.onclick=()=>open(it);
+    grid.append(d);
+  });
+}
+
+/* ---------- إضافة ---------- */
+async function addBlob(blob,name,kind){
+  if(!sb){ msg.textContent='الموقع لسه مش مُعدّ.'; return; }
+  if(blob.size>MAXB){ msg.textContent='«'+name+'» أكبر من 50 ميجا.'; return; }
+  msg.textContent='جاري الرفع…';
+  const mime=(blob.type||'').split(';')[0]||'application/octet-stream';
+  const path=crypto.randomUUID()+'.'+(mime.split('/')[1]||'bin').replace(/[^a-z0-9]/gi,'');
+  const up=await store().upload(path,blob,{contentType:mime});
+  if(up.error){ msg.textContent='فشل الرفع: '+up.error.message; return; }
+  const ins=await sb.from('clips').insert({name,kind,mime,path});
+  if(ins.error){ msg.textContent='فشلت الإضافة: '+ins.error.message; return; }
+  msg.textContent=''; sig=''; await load();
+}
+$('#addBtn').onclick=()=>$('#file').click();
+$('#file').onchange=async e=>{
+  for(const f of e.target.files){
+    const kind=f.type.startsWith('image/')?'img':f.type.startsWith('audio/')?'file':null;
+    if(!kind){ msg.textContent='«'+f.name+'» نوعه غير مدعوم.'; continue; }
+    await addBlob(f,f.name.replace(/\.[^.]+$/,''),kind);
+  }
+  e.target.value='';
+};
+
+/* ---------- التسجيل ---------- */
+let mr=null,chunks=[],tmr=null,t0=0;
+$('#recBtn').onclick=async()=>{
+  const b=$('#recBtn');
+  if(mr){ mr.stop(); return; }
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    mr=new MediaRecorder(st); chunks=[];
+    mr.ondataavailable=e=>chunks.push(e.data);
+    mr.onstop=async()=>{
+      st.getTracks().forEach(t=>t.stop()); clearInterval(tmr);
+      const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'}); mr=null;
+      b.textContent='🎙️ تسجيل'; b.className=''; msg.textContent='';
+      const n=prompt('اسم التسجيل','تسجيل '+(items.filter(i=>i.kind==='rec').length+1));
+      await addBlob(blob,(n&&n.trim())||'تسجيل','rec');
+    };
+    mr.start(); t0=Date.now(); b.className='rec';
+    tmr=setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); b.textContent='⏹ إيقاف '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0') },250);
+  }catch(e){ msg.textContent='ما قدرت أوصل للمايكروفون. تأكد من السماح بالصلاحية.' }
+};
+
+/* ---------- الواجهة ---------- */
+$('#tabs').onclick=e=>{ if(e.target.dataset.t){ tab=e.target.dataset.t; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab)); render() } };
+$('#vol').oninput=e=>{ vol=+e.target.value; if(playing) playing.volume=vol };
+render(); init();
+
+/* ---------- الانترو ---------- */
+(function(){
+  const ov=$('#intro'),w=$('#iw'),L=[['m','🎧'],['0','💿'],['s','✨'],['4','🎶'],['r','🎤']];
+  L.forEach((p,i)=>{ const d=document.createElement('div'); d.className='lt'; d.style.animationDelay=(0.3+i*0.45)+'s'; d.innerHTML='<span class="em"></span><b></b>'; d.querySelector('.em').textContent=p[1]; d.querySelector('b').textContent=p[0]; w.append(d) });
+  let done=false; function close(){ if(done) return; done=true; ov.classList.add('out'); setTimeout(()=>ov.remove(),700) }
+  ov.onclick=close; setTimeout(close,4200);
+})();
+</script>
+</body>
+</html>
